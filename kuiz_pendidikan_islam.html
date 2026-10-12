@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#174ea6">
+  <title>Kuiz Pendidikan Islam</title>
+  <style>
+    :root { font-family: system-ui, Arial, sans-serif; color: #172033; background: #eef4ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px 12px 40px; }
+    .app { max-width: 720px; margin: 0 auto; }
+    header { text-align: center; padding: 22px 16px; color: white; border-radius: 20px; background: linear-gradient(135deg,#174ea6,#6a4cce); box-shadow: 0 8px 24px #173c7722; }
+    header h1 { margin: 0 0 8px; font-size: clamp(1.5rem,5vw,2.2rem); }
+    header p { margin: 0; opacity: .95; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 14px 0; }
+    .stat { background: white; border-radius: 14px; padding: 12px 8px; text-align: center; box-shadow: 0 3px 12px #1720330c; }
+    .stat span { display:block; color:#5b6475; font-size:.82rem; }
+    .stat strong { display:block; font-size:1.35rem; margin-top:4px; }
+    #questions { display: grid; gap: 14px; }
+    .question { background:white; padding:18px; border-radius:16px; box-shadow:0 3px 12px #1720330c; border:2px solid transparent; }
+    .question.done { border-color:#26a269; }
+    .question h2 { margin:0 0 8px; font-size:1.08rem; }
+    .attempts { color:#687287; font-size:.88rem; margin:0 0 12px; }
+    .answers { display:grid; gap:8px; }
+    button { font:inherit; cursor:pointer; touch-action:manipulation; }
+    .answer { width:100%; text-align:left; padding:12px 14px; border:1px solid #d6deeb; background:#f8faff; border-radius:10px; color:#172033; }
+    .answer:hover:not(:disabled) { border-color:#174ea6; background:#eef4ff; }
+    .answer:disabled { cursor:default; opacity:.72; }
+    .answer.correct { background:#e4f8ed; border-color:#26a269; opacity:1; }
+    .feedback { min-height:1.4em; margin:12px 0 0; font-weight:600; font-size:.94rem; }
+    .feedback.good { color:#167348; } .feedback.bad { color:#a33a32; }
+    .footer { text-align:center; margin-top:16px; color:#5b6475; font-size:.9rem; }
+    #restart { margin-top:12px; border:0; background:#174ea6; color:white; border-radius:10px; padding:12px 18px; }
+    #restart:focus-visible,.answer:focus-visible { outline:3px solid #ffbf47; outline-offset:2px; }
+    @media (max-width:420px) { .stats { gap:6px; } .stat strong { font-size:1.15rem; } .question { padding:14px; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>📚 Kuiz Pendidikan Islam</h1>
+      <p>Jawab soalan, kumpulkan markah dan uji pengetahuan anda!</p>
+    </header>
+    <section class="stats" aria-label="Game score summary">
+      <div class="stat"><span>Jumlah markah</span><strong id="score">0</strong></div>
+      <div class="stat"><span>Selesai</span><strong id="completed">0/20</strong></div>
+      <div class="stat"><span>Percubaan salah</span><strong id="wrong">0</strong></div>
+    </section>
+    <section id="questions" aria-live="polite"></section>
+    <div class="footer">
+      <p>Markah: +10 untuk jawapan betul, −2 bagi setiap percubaan salah. Jumlah markah tidak akan kurang daripada sifar. Soalan dikunci selepas dijawab dengan betul.</p>
+      <button id="restart" type="button">Mula semula kuiz</button>
+      <p id="finalMessage" role="status"></p>
+    </div>
+  </main>
+<script>
+  const quiz = [
+    {
+        "question": "Pengucapan __________ sebagai tunjang akidah.",
+        "answers": [
+            "Rukun iman",
+            "Rukun Islam",
+            "Syahadah",
+            "Jihad"
+        ],
+        "correct": 2,
+        "explanation": "Syahadah ialah pengakuan asas dalam akidah Islam."
+    },
+    {
+        "question": "Antara yang berikut, yang manakah ciri akidah yang benar?",
+        "answers": [
+            "I dan II",
+            "II dan III",
+            "III dan IV",
+            "I dan IV"
+        ],
+        "correct": 1,
+        "explanation": "Mentauhidkan Allah SWT dan percaya terhadap kewujudan Allah ialah ciri akidah yang benar."
+    },
+    {
+        "question": "Antara kepentingan akidah dalam kehidupan Muslim ialah __________.",
+        "answers": [
+            "Doa tidak dimakbulkan",
+            "Hidup menjadi huru-hara",
+            "Mendapat kemurkaan Allah SWT",
+            "Membentuk jati diri sebagai Muslim sejati"
+        ],
+        "correct": 3,
+        "explanation": "Akidah yang benar membentuk jati diri seorang Muslim."
+    },
+    {
+        "question": "Pilih nama Allah SWT yang menunjukkan Allah SWT mencipta makhluk mengikut kehendak yang telah ditakdirkan-Nya dengan sempurna.",
+        "answers": [
+            "Al-Qadir",
+            "Al-Qawiy",
+            "Al-Khaliq",
+            "Al-Musawwir"
+        ],
+        "correct": 2,
+        "explanation": "Al-Khaliq bermaksud Maha Pencipta."
+    },
+    {
+        "question": "Pilih pernyataan yang betul mengenai istilah berikut.",
+        "answers": [
+            "Samak — membasuh anggota tertentu berserta niat",
+            "Istinjak — benda kotor yang menyebabkan solat tidak sah",
+            "Sertu — proses menghilangkan segala lendir, daging dan kelembapan yang melekat pada kulit",
+            "Solat — perbuatan dan perkataan tertentu yang dimulai dengan takbiratulihram dan diakhiri dengan salam"
+        ],
+        "correct": 3,
+        "explanation": "Solat ialah perbuatan dan perkataan tertentu yang dimulai dengan takbiratulihram dan diakhiri dengan salam."
+    },
+    {
+        "question": "Berikut merupakan anggota sujud, KECUALI:",
+        "answers": [
+            "Dahi",
+            "Dua siku",
+            "Dua lutut",
+            "Dua tapak tangan"
+        ],
+        "correct": 1,
+        "explanation": "Anggota sujud termasuk dahi, dua tapak tangan, dua lutut dan hujung kedua-dua kaki; siku bukan anggota sujud."
+    },
+    {
+        "question": "Berikut ialah sunat wuduk, KECUALI:",
+        "answers": [
+            "Menyapu telinga",
+            "Memasukkan air ke hidung",
+            "Membasuh tangan hingga pergelangan tangan",
+            "Membasuh kaki"
+        ],
+        "correct": 3,
+        "explanation": "Membasuh kaki ialah rukun wuduk, bukannya sunat wuduk."
+    },
+    {
+        "question": "Pernyataan “suci daripada hadas kecil dan besar” serta “suci daripada najis pada badan, pakaian dan tempat” merujuk kepada __________.",
+        "answers": [
+            "Syarat wajib solat",
+            "Syarat sah solat",
+            "Khusyuk solat",
+            "Rukun solat"
+        ],
+        "correct": 1,
+        "explanation": "Suci daripada hadas dan najis merupakan syarat sah solat."
+    },
+    {
+        "question": "Antara yang berikut, yang manakah BUKAN perkara yang membatalkan wuduk?",
+        "answers": [
+            "Tidur yang tidak tetap punggung",
+            "Keluar sesuatu daripada qubul atau dubur",
+            "Hilang akal dengan sebab pitam atau mabuk",
+            "Mengelap anggota wuduk selepas berwuduk"
+        ],
+        "correct": 3,
+        "explanation": "Mengelap anggota selepas berwuduk tidak membatalkan wuduk."
+    },
+    {
+        "question": "Apakah hukum tajwid bagi نّ dalam potongan ayat “قُلْ أَعُوذُ بِرَبِّ النَّاسِ”?",
+        "answers": [
+            "Wajibul ghunnah",
+            "Alif lam qamariah",
+            "Alif lam syamsiah",
+            "Idgham maal ghunnah"
+        ],
+        "correct": 0,
+        "explanation": "Nun bersabdu (نّ) dibaca dengan ghunnah."
+    },
+    {
+        "question": "Gelaran kepada Nabi Muhammad SAW ialah __________.",
+        "answers": [
+            "Al-Amin",
+            "Al-Faruq",
+            "Al-Siddiq",
+            "Zu Nurain"
+        ],
+        "correct": 0,
+        "explanation": "Nabi Muhammad SAW dikenali dengan gelaran al-Amin, iaitu orang yang dipercayai."
+    },
+    {
+        "question": "Antara yang berikut, yang manakah pekerjaan Nabi Muhammad SAW sebelum diutus menjadi rasul? I. Berniaga. II. Mengukir kayu. III. Membuat kapal. IV. Mengembala kambing.",
+        "answers": [
+            "I dan II",
+            "II dan III",
+            "III dan IV",
+            "I dan IV"
+        ],
+        "correct": 3,
+        "explanation": "Baginda pernah berniaga dan mengembala kambing."
+    },
+    {
+        "question": "Apakah tindakan Rasulullah SAW dalam peristiwa peletakan Hajarul Aswad?",
+        "answers": [
+            "Meminta petunjuk Allah SWT dengan berdoa",
+            "Melantik seorang ketua untuk meletakkan Hajarul Aswad di tempatnya",
+            "Membuat undian untuk memilih seorang kabilah yang akan meletakkan Hajarul Aswad",
+            "Meminta kabilah-kabilah memegang hujung ridak baginda yang meletakkan Hajarul Aswad di tengah-tengahnya"
+        ],
+        "correct": 3,
+        "explanation": "Baginda meletakkan Hajarul Aswad di atas ridak dan meminta wakil kabilah memegang hujungnya bersama-sama."
+    },
+    {
+        "question": "Surah al-Baqarah ayat 155 menyebut beberapa ujian. Berikut ialah contoh musibah yang dinyatakan dalam ayat tersebut, KECUALI:",
+        "answers": [
+            "Perasaan takut",
+            "Kejadian gempa bumi",
+            "Kehilangan harta benda",
+            "Kekurangan hasil tanaman"
+        ],
+        "correct": 1,
+        "explanation": "Ayat tersebut menyebut ketakutan, kelaparan, kekurangan harta, kehilangan jiwa dan kekurangan hasil tanaman; gempa bumi tidak disebut secara khusus."
+    },
+    {
+        "question": "Pilih padanan yang betul dalam jadual istilah dan maksud hadis.",
+        "answers": [
+            "Sanad — teks hadis",
+            "Matan — rangkaian perawi hadis",
+            "Hadis Nabi — sesuatu yang disandarkan kepada Rasulullah SAW",
+            "Hadis Qudsi — lafaz daripada Allah SWT, makna daripada Rasulullah SAW"
+        ],
+        "correct": 2,
+        "explanation": "Hadis Nabi ialah sesuatu yang disandarkan kepada Rasulullah SAW."
+    },
+    {
+        "question": "Antara yang berikut ialah akhlak mazmumah, KECUALI:",
+        "answers": [
+            "Riak",
+            "Qanaah",
+            "Sombong",
+            "Putus asa"
+        ],
+        "correct": 1,
+        "explanation": "Qanaah ialah sifat reda dan berasa cukup dengan pemberian Allah, bukan akhlak mazmumah."
+    },
+    {
+        "question": "Maksud air mutlak ialah air yang __________.",
+        "answers": [
+            "Dimasuki atau terkena najis",
+            "Suci dan boleh digunakan untuk bersuci",
+            "Suci tetapi tidak boleh digunakan untuk bersuci",
+            "Disimpan di dalam bekas yang terdedah kepada cahaya matahari"
+        ],
+        "correct": 1,
+        "explanation": "Air mutlak ialah air yang suci lagi menyucikan dan boleh digunakan untuk bersuci."
+    },
+    {
+        "question": "Ilmu fardu ain ialah ilmu yang wajib dituntut oleh setiap umat Islam. Apakah contoh ilmu fardu ain berdasarkan pernyataan ini?",
+        "answers": [
+            "Ilmu fekah",
+            "Ilmu sains",
+            "Ilmu kedoktoran",
+            "Ilmu kejuruteraan"
+        ],
+        "correct": 0,
+        "explanation": "Ilmu fekah berkaitan hukum-hakam amali yang perlu diketahui oleh setiap Muslim."
+    },
+    {
+        "question": "Pernyataan “menjadi pewaris para nabi”, “menjadi pemimpin ke jalan kebaikan” dan “menjadi contoh teladan dalam kalangan masyarakat” merujuk kepada __________.",
+        "answers": [
+            "Adab menuntut ilmu",
+            "Kelebihan orang yang berilmu",
+            "Kepentingan beradab ketika menuntut ilmu",
+            "Akibat tidak beradab ketika menuntut ilmu"
+        ],
+        "correct": 1,
+        "explanation": "Pernyataan tersebut menerangkan kelebihan orang yang berilmu."
+    },
+    {
+        "question": "Apakah yang perlu dilakukan untuk menjaga maruah diri dari segi berpakaian? I. Memakai pakaian yang cantik dan mahal. II. Pakaian boleh menyerupai pakaian agama lain. III. Pakaian perlu sesuai dengan tatasusila masyarakat setempat. IV. Memakai pakaian yang bebas daripada lambang yang dilarang dalam Islam.",
+        "answers": [
+            "I dan II",
+            "II dan III",
+            "III dan IV",
+            "I dan IV"
+        ],
+        "correct": 2,
+        "explanation": "Pakaian hendaklah sesuai dengan tatasusila masyarakat dan bebas daripada lambang yang dilarang dalam Islam."
+    }
+];
+  const POINTS_CORRECT = 10;
+  const PENALTY_WRONG = 2;
+  let score = 0;
+  let wrongAttempts = 0;
+  // Each question has its own attempt count and lock status.
+  let state = quiz.map(() => ({ attempts: 0, locked: false }));
+  const questionsEl = document.getElementById('questions');
+
+  function renderQuiz() {
+    questionsEl.replaceChildren();
+    quiz.forEach((item, index) => {
+      const card = document.createElement('article');
+      card.className = 'question' + (state[index].locked ? ' done' : '');
+      const title = document.createElement('h2');
+      title.textContent = `${index + 1}. ${item.question}`;
+      const attempts = document.createElement('p');
+      attempts.className = 'attempts';
+      attempts.id = `attempts-${index}`;
+      attempts.textContent = `Percubaan salah untuk soalan ini: ${state[index].attempts}`;
+      const answers = document.createElement('div');
+      answers.className = 'answers';
+      answers.id = `answers-${index}`;
+      item.answers.forEach((answer, answerIndex) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'answer';
+        button.textContent = `${String.fromCharCode(65 + answerIndex)}. ${answer}`;
+        button.disabled = state[index].locked;
+        button.addEventListener('click', () => submitAnswer(index, answerIndex, button));
+        answers.appendChild(button);
+      });
+      const feedback = document.createElement('p');
+      feedback.className = 'feedback';
+      feedback.id = `feedback-${index}`;
+      feedback.setAttribute('role', 'status');
+      if (state[index].locked) {
+        feedback.classList.add('good');
+        feedback.textContent = `Betul! +${POINTS_CORRECT} mata. ${item.explanation}`;
+        answers.children[item.correct].classList.add('correct');
+      }
+      card.append(title, attempts, answers, feedback);
+      questionsEl.appendChild(card);
+    });
+    updateStats();
+  }
+
+  function submitAnswer(questionIndex, selectedIndex, clickedButton) {
+    const questionState = state[questionIndex];
+    // Guard against repeat/double submissions and any already-completed question.
+    if (questionState.locked || clickedButton.disabled) return;
+    const feedback = document.getElementById(`feedback-${questionIndex}`);
+    const attemptsLabel = document.getElementById(`attempts-${questionIndex}`);
+    const answerButtons = document.getElementById(`answers-${questionIndex}`).querySelectorAll('button');
+
+    if (selectedIndex === quiz[questionIndex].correct) {
+      questionState.locked = true;
+      score += POINTS_CORRECT;
+      answerButtons.forEach(button => button.disabled = true);
+      clickedButton.classList.add('correct');
+      document.querySelectorAll('.question')[questionIndex].classList.add('done');
+      feedback.className = 'feedback good';
+      feedback.textContent = `Betul! +${POINTS_CORRECT} mata. ${quiz[questionIndex].explanation}`;
+    } else {
+      questionState.attempts += 1;
+      wrongAttempts += 1;
+      score = Math.max(0, score - PENALTY_WRONG);
+      attemptsLabel.textContent = `Percubaan salah untuk soalan ini: ${questionState.attempts}`;
+      feedback.className = 'feedback bad';
+      feedback.textContent = `Belum tepat. −${PENALTY_WRONG} mata. Cuba jawapan lain.`;
+      // Briefly disable all options to stop rapid double taps; restore if still unanswered.
+      answerButtons.forEach(button => button.disabled = true);
+      window.setTimeout(() => {
+        if (!questionState.locked) answerButtons.forEach(button => button.disabled = false);
+      }, 250);
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    const completed = state.filter(item => item.locked).length;
+    document.getElementById('score').textContent = score;
+    document.getElementById('completed').textContent = `${completed}/${quiz.length}`;
+    document.getElementById('wrong').textContent = wrongAttempts;
+    document.getElementById('finalMessage').textContent = completed === quiz.length
+      ? `Kuiz selesai! Markah akhir: ${score} mata. Jumlah percubaan salah: ${wrongAttempts}.`
+      : '';
+  }
+
+  document.getElementById('restart').addEventListener('click', () => {
+    score = 0;
+    wrongAttempts = 0;
+    state = quiz.map(() => ({ attempts: 0, locked: false }));
+    renderQuiz();
+  });
+
+  renderQuiz();
+</script>
+</body>
+</html>
