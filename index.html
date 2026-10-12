@@ -299,8 +299,21 @@
     quiz.forEach((item, index) => {
       const card = document.createElement('article');
       card.className = 'question' + (state[index].locked ? ' done' : '');
+      // --- NEW AMENDED CODE ---
       const title = document.createElement('h2');
+
+      // If the question is an array, parse the main prompt and join the list items with line breaks
+      if (Array.isArray(item.question)) {
+  const mainQuestion = item.question[0];
+  const listOptions = item.question.slice(1).join('<br>');
+  title.innerHTML = `${index + 1}. ${mainQuestion}<br><span style="font-weight: normal; font-size: 0.95rem; display: block; margin-top: 6px;">${listOptions}</span>`;
+} else {
+      // Fallback if some questions are just plain text strings
       title.textContent = `${index + 1}. ${item.question}`;
+      }
+      // --- OLD CODE TO REPLACE ---
+      //const title = document.createElement('h2');
+      //title.textContent = `${index + 1}. ${item.question}`;
       const attempts = document.createElement('p');
       attempts.className = 'attempts';
       attempts.id = `attempts-${index}`;
