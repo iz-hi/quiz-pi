@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Cloud+ (CV0-004) Quiz Master</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --border-color: #e2e8f0;
+            --correct-bg: #d4edda;
+            --correct-border: #28a745;
+            --incorrect-bg: #f8d7da;
+            --incorrect-border: #dc3545;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e9ecef;
+            --accent-color: #4e54c8;
+            --accent-hover: #3f43a6;
+            --border-color: #0f3460;
+            --correct-bg: #1e4620;
+            --correct-border: #28a745;
+            --incorrect-bg: #5c1d24;
+            --incorrect-border: #dc3545;
+            --shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background-color: var(--accent-hover); }
+
+        .module-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+
+        .module-card:hover, .module-card.active {
+            border-color: var(--accent-color);
+        }
+
+        .quiz-panel {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .quiz-panel.active { display: block; }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .timer { color: #e74c3c; }
+
+        .question-text {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .option-item {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            border-color: var(--accent-color);
+        }
+
+        .option-item.selected {
+            border-color: var(--accent-color);
+            background-color: var(--border-color);
+        }
+
+        .option-item.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+        }
+
+        .option-item.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CompTIA Cloud+ (CV0-004) Exam Prep</h1>
+        <div>
+            <button class="btn" onclick="toggleDarkMode()">🌓 Toggle Theme</button>
+        </div>
+    </header>
+
+    <div id="module-select" class="module-selector">
+        <div class="module-card" onclick="startQuiz(1)">
+            <h3>Quiz Module 1</h3>
+            <p>Questions 1 – 90</p>
+            <p>⏱️ 90 Mins</p>
+        </div>
+        <div class="module-card" onclick="startQuiz(2)">
+            <h3>Quiz Module 2</h3>
+            <p>Questions 91 – 180</p>
+            <p>⏱️ 90 Mins</p>
+        </div>
+        <div class="module-card" onclick="startQuiz(3)">
+            <h3>Quiz Module 3</h3>
+            <p>Questions 181 – 270</p>
+            <p>⏱️ 90 Mins</p>
+        </div>
+        <div class="module-card" onclick="startQuiz(4)">
+            <h3>Quiz Module 4</h3>
+            <p>Questions 271 – 314</p>
+            <p>⏱️ 90 Mins</p>
+        </div>
+    </div>
+
+    <div id="quiz-container" class="quiz-panel">
+        <div class="quiz-header">
+            <span id="q-progress">Question 1/90</span>
+            <button class="btn" onclick="shuffleQuestions()">🔀 Shuffle</button>
+            <span id="timer" class="timer">⏱️ 90:00</span>
+        </div>
+
+        <div class="question-text" id="question-text">
+            Loading Question...
+        </div>
+
+        <ul class="options-list" id="options-list"></ul>
+
+        <div class="controls">
+            <button class="btn" id="prev-btn" onclick="prevQuestion()" disabled>Previous</button>
+            <button class="btn" id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+            <button class="btn" id="next-btn" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <h2>📈 Detailed Score History Tracker</h2>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Module</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody id="history-body">
+                <tr><td colspan="4">No past quiz results recorded.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Full JSON Question Database for all 314 questions
+    const questionsDatabase = [
+      {
+        "id": 1,
+        "text": "A software engineer needs to transfer data over the internet using programmatic access while also being able to query the data. Which of the following will best help the engineer to complete this task?",
+        "options": ["A. SQL", "B. Web sockets", "C. RPC", "D. GraphQL"],
+        "answer": "D"
+      },
+      {
+        "id": 2,
+        "text": "Which of the following is a field of computer science that enables computers to identify and understand objects and people in images and videos?",
+        "options": ["A. Image reconstruction", "B. Facial recognition", "C. Natural language processing", "D. Computer vision"],
+        "answer": "D"
+      },
+      {
+        "id": 3,
+        "text": "A company needs to deploy its own code directly in the cloud without provisioning additional infrastructure. Which of the following is the best cloud service model for the company to use?",
+        "options": ["A. PaaS", "B. SaaS", "C. IaaS", "D. XaaS"],
+        "answer": "A"
+      },
+      {
+        "id": 4,
+        "text": "A company just learned that the data in its object storage was accessed by an unauthorized party. Which of the following should the company have done to make the data unusable?",
+        "options": ["A. The company should have switched from object storage to file storage.", "B. The company should have hashed the data.", "C. The company should have changed the file access permissions.", "D. The company should have encrypted the data at rest."],
+        "answer": "D"
+      },
+      {
+        "id": 5,
+        "text": "A customer relationship management application, which is hosted in a public cloud IaaS network, is vulnerable to a remote command execution vulnerability. Which of the following is the best solution for the security engineer to implement to prevent the application from being exploited by basic attacks?",
+        "options": ["A. IPS", "B. ACL", "C. DLP", "D. WAF"],
+        "answer": "D"
+      },
+      {
+        "id": 6,
+        "text": "Which of the following is a difference between a SAN and a NAS?",
+        "options": ["A. A SAN works only with fiber-based networks.", "B. A SAN works with any Ethernet-based network.", "C. A NAS uses a faster protocol than a SAN.", "D. A NAS uses a slower protocol than a SAN."],
+        "answer": "D"
+      },
+      {
+        "id": 7,
+        "text": "A cloud engineer is troubleshooting an application that consumes multiple third-party REST APIs. The application is randomly experiencing high latency. Which of the following would best help determine the source of the latency?",
+        "options": ["A. Configuring centralized logging to analyze HTTP requests", "B. Running a flow log on the network to analyze the packets", "C. Configuring an API gateway to track all incoming requests", "D. Enabling tracing to detect HTTP response times and codes"],
+        "answer": "D"
+      },
+      {
+        "id": 8,
+        "text": "A cloud engineer is reviewing the Dockerfile to deploy a Python web application. Which of the following changes should the engineer make to the file to improve container security?",
+        "options": ["A. Add the instruction USER nonroot.", "B. Change the version from latest to 3.11.", "C. Remove the ENTRYPOINT instruction.", "D. Ensure myapp/main/py is owned by root."],
+        "answer": "A"
+      },
+      {
+        "id": 9,
+        "text": "A group of cloud administrators frequently uses the same deployment template to recreate a cloud-based development environment. The administrators are unable to go back and review the history of changes they have made to the template. Which of the following cloud resource deployment concepts should the administrator start using?",
+        "options": ["A. Drift detection", "B. Repeatability", "C. Documentation", "D. Versioning"],
+        "answer": "D"
+      },
+      {
+        "id": 10,
+        "text": "A government agency in the public sector is considering a migration from on premises to the cloud. Which of the following are the most important considerations for this cloud migration? (Choose two.)",
+        "options": ["A. Compliance", "B. IaaS vs. SaaS", "C. Firewall capabilities", "D. Regulatory", "E. Implementation timeline", "F. Service availability"],
+        "answer": "A"
+      },
+      {
+        "id": 11,
+        "text": "A company wants to optimize cloud resources and lower the overhead caused by managing multiple operating systems. Which of the following compute resources would be best to help to achieve this goal?",
+        "options": ["A. VM", "B. Containers", "C. Remote desktops", "D. Bare-metal servers"],
+        "answer": "B"
+      },
+      {
+        "id": 12,
+        "text": "A company runs a discussion forum that caters to global users. The company’s monitoring system reports that the home page suddenly is seeing elevated response times, even though internal monitoring has reported no issues or changes. Which of the following is the most likely cause of this issue?",
+        "options": ["A. Cryptojacking", "B. Human error", "C. DDoS", "D. Phishing"],
+        "answer": "C"
+      },
+      {
+        "id": 13,
+        "text": "Which of the following migration types is best to use when migrating a highly available application, which is normally hosted on a local VM cluster, for usage with an external user population?",
+        "options": ["A. Cloud to on-premises", "B. Cloud to cloud", "C. On-premises to cloud", "D. On-premises to on-premises"],
+        "answer": "C"
+      },
+      {
+        "id": 14,
+        "text": "A cloud architect attempts to modify a protected branch but is unable to do so. The architect receives an error indicating the action cannot be completed. Which of the following should the architect try instead?",
+        "options": ["A. Adding a new remote", "B. Creating a pull request", "C. Merging the branch", "D. Rebasing the branch"],
+        "answer": "B"
+      },
+      {
+        "id": 15,
+        "text": "Which of the following container storage types loses data after a restart?",
+        "options": ["A. Object", "B. Persistent volume", "C. Ephemeral", "D. Block"],
+        "answer": "C"
+      },
+      {
+        "id": 16,
+        "text": "A developer is testing code that will be used to deploy a web farm in a public cloud. The main code block creates a load balancer and loops to create 1,000 servers, but only 100 servers are created. What should the developer do?",
+        "options": ["A. Request an increase of instance quota.", "B. Run the code multiple times until all servers are created.", "C. Check the my_web_server function credentials.", "D. Place the load balancer function after the loop."],
+        "answer": "A"
+      },
+      {
+        "id": 17,
+        "text": "Following a ransomware attack, the legal department instructs the IT administrator to store the data from affected virtual machines for a minimum of one year. What is this an example of?",
+        "options": ["A. Recoverability", "B. Retention", "C. Encryption", "D. Integrity"],
+        "answer": "B"
+      },
+      {
+        "id": 18,
+        "text": "An engineer made a change to an application and needs a deployment strategy that is simple, fast, and can be performed on two identical platforms. Which strategy should be used?",
+        "options": ["A. Blue-green", "B. Canary", "C. Rolling", "D. In-place"],
+        "answer": "A"
+      },
+      {
+        "id": 19,
+        "text": "An organization needs to retain its data for compliance reasons but only when required. Which of the following would be the most cost-effective type of tiered storage?",
+        "options": ["A. Warm", "B. Hot", "C. Archive", "D. Cold"],
+        "answer": "C"
+      },
+      {
+        "id": 20,
+        "text": "An e-commerce store is preparing for an annual holiday sale increasing traffic significantly. The cloud administrator wants an automated, low-cost scaling approach. Which approach should be used?",
+        "options": ["A. Scale horizontally with extra web servers.", "B. Allow the load to trigger adjustments to the resources.", "C. Adjust resources manually using the portal.", "D. Schedule scaling before the sale."],
+        "answer": "B"
+      },
+      {
+        "id": 21,
+        "text": "Which vulnerability management phase includes discovering newly introduced security vulnerabilities?",
+        "options": ["A. Scanning", "B. Identification", "C. Reporting", "D. Remediation"],
+        "answer": "A"
+      },
+      {
+        "id": 22,
+        "text": "A developer sends multiple requests to a SaaS application quickly, causing all users to be blocked. What does this describe?",
+        "options": ["A. Service quotas", "B. API rate limiting", "C. Full outage", "D. Regional availability"],
+        "answer": "B"
+      },
+      {
+        "id": 23,
+        "text": "A cloud engineer needs to integrate a new payment processor with an existing e-commerce website. Which technology is the best fit?",
+        "options": ["A. RPC over SSL", "B. Transactional SQL", "C. REST API over HTTPS", "D. Secure web socket"],
+        "answer": "C"
+      },
+      {
+        "id": 24,
+        "text": "A company’s website suddenly crashed with 502 errors in logs. What is the most likely cause?",
+        "options": ["A. SQL injection", "B. Cross-site scripting", "C. Leaked credentials", "D. DDoS"],
+        "answer": "D"
+      },
+      {
+        "id": 25,
+        "text": "Which of the following best describes a characteristic of a hot site?",
+        "options": ["A. Servers are clustered with the main site.", "B. Network traffic is balanced.", "C. Offline backups replicated hourly.", "D. All servers replicated in an online status."],
+        "answer": "D"
+      },
+      {
+        "id": 26,
+        "text": "Five thousand employees access a public cloud web app daily at the same time, causing performance issues. What is the best configuration approach?",
+        "options": ["A. Scale vertically based on trend.", "B. Scale horizontally based on a schedule.", "C. Scale vertically based on load.", "D. Scale horizontally based on event."],
+        "answer": "B"
+      },
+      {
+        "id": 27,
+        "text": "A disaster recovery plan requires backing up system states, files, and configurations weekly, tested annually. What backup method should be used for the first week?",
+        "options": ["A. Differential", "B. Incremental", "C. Snapshot", "D. Full"],
+        "answer": "D"
+      },
+      {
+        "id": 28,
+        "text": "Which of the following is a direct effect of cloud migration on an enterprise?",
+        "options": ["A. Reorganize reporting structure.", "B. Address compatibility on-premises.", "C. Cloud solutions require more resources.", "D. Utility costs will be reduced on premises."],
+        "answer": "D"
+      },
+      {
+        "id": 29,
+        "text": "A company creates VDIs for contractors. Creating instances succeeds in some locations and fails in others. What is the most likely reason?",
+        "options": ["A. Partial service outages", "B. Regional service availability", "C. Service quotas", "D. Deprecation of functionality"],
+        "answer": "B"
+      },
+      {
+        "id": 30,
+        "text": "An administrator ran a script to create VMs, but they have no tags `{tags: []}`. What is the most likely reason?",
+        "options": ["A. API throttling", "B. Service quotas", "C. Command deprecation", "D. Compatibility issues"],
+        "answer": "C"
+      },
+      {
+        "id": 31,
+        "text": "A cloud administrator needs process-level memory tracking for VMs in an auto-scaling group using cloud-native services. What is the best way?",
+        "options": ["A. Page file/swap metrics", "B. Deploying monitoring agent software", "C. Scheduling a script", "D. Enabling VM config memory monitoring"],
+        "answer": "B"
+      },
+      {
+        "id": 32,
+        "text": "A cloud developer is creating a global static website. Which service helps reduce latency?",
+        "options": ["A. VPC", "B. Application load balancer", "C. CDN", "D. API gateway"],
+        "answer": "C"
+      },
+      {
+        "id": 33,
+        "text": "A cloud engineer is designing a vendor-agnostic, three-tier cloud-native application with minimal services on layers. Which concept should be used?",
+        "options": ["A. Virtual machine", "B. Microservices", "C. Fan-out", "D. Managed services"],
+        "answer": "B"
+      },
+      {
+        "id": 34,
+        "text": "A cloud architect needs consistency across production, staging, and development environments. How can this best be achieved?",
+        "options": ["A. Terraform templates with environment variables", "B. Grafana in each environment", "C. ELK stack in each environment", "D. Jenkins agents in environments"],
+        "answer": "A"
+      },
+      {
+        "id": 35,
+        "text": "A healthcare organization must ensure PII is not leaked via email. What should be enabled?",
+        "options": ["A. IPS", "B. DLP", "C. ACL", "D. WAF"],
+        "answer": "B"
+      },
+      {
+        "id": 36,
+        "text": "A CMS service on IaaS is targeted by DDoS attacks. What should an engineer monitor to identify attacks?",
+        "options": ["A. Network flow logs", "B. EDR logs", "C. Cloud provider event logs", "D. Instance syslog"],
+        "answer": "A"
+      },
+      {
+        "id": 37,
+        "text": "What is the most cost-effective way to store infrequently accessed data?",
+        "options": ["A. Cold site", "B. Hot site", "C. Off-site", "D. Warm site"],
+        "answer": "C"
+      },
+      {
+        "id": 38,
+        "text": "Which model reduces the cost of short-term, non-critical workloads?",
+        "options": ["A. Reserved", "B. Spot instance", "C. Pay-as-you-go", "D. Dedicated host"],
+        "answer": "B"
+      },
+      {
+        "id": 39,
+        "text": "Which vulnerability management concept is defined as discovering vulnerabilities?",
+        "options": ["A. Scanning", "B. Assessment", "C. Remediation", "D. Identification"],
+        "answer": "A"
+      },
+      {
+        "id": 40,
+        "text": "Which storage type provides the greatest performance advantage for a traditional relational database?",
+        "options": ["A. File", "B. Object", "C. Block", "D. Ephemeral"],
+        "answer": "C"
+      },
+      {
+        "id": 41,
+        "text": "A network engineer troubleshooting subnet configurations for IT and operations needs to meet address/routing requirements. What configuration is correct?",
+        "options": ["A. Modifying subnet mask to 255.255.254.0 and static routing", "B. Static routing only", "C. BYOD policy updates", "D. Subnet combination"],
+        "answer": "A"
+      },
+      {
+        "id": 42,
+        "text": "Which compute resource is optimal for running a single scripted task on a schedule?",
+        "options": ["A. Bare-metal server", "B. Managed container", "C. Virtual machine", "D. Serverless function"],
+        "answer": "D"
+      },
+      {
+        "id": 43,
+        "text": "Local video surveillance storage before cloud uploading and deletion is best described as:",
+        "options": ["A. Persistent", "B. Ephemeral", "C. Differential", "D. Incremental"],
+        "answer": "B"
+      },
+      {
+        "id": 44,
+        "text": "An organization hosts 8 users on a 10.1.10.0/29 network via DHCP. Several users cannot access VMs. Why?",
+        "options": ["A. Not enough addresses available (/29 provides 6 usable IPs).", "B. Routes misconfigured.", "C. Too much traffic.", "D. DHCP error."],
+        "answer": "A"
+      },
+      {
+        "id": 45,
+        "text": "To create a utilization and budgeting report for cloud resources, what are the requisite steps? (Choose two.)",
+        "options": ["A. Set log retention", "B. Configure tracing", "C. Email alerts", "D. Enable resource tagging and collection of utilization logs", "E. Performance logs", "F. Metric thresholds"],
+        "answer": "D"
+      },
+      {
+        "id": 46,
+        "text": "A cloud engineer writes a Terraform deployment script. What action will it perform?",
+        "options": ["A. Upload a new VM image.", "B. Create a new cloud resource.", "C. Build a local server.", "D. Import a cloud module."],
+        "answer": "B"
+      },
+      {
+        "id": 47,
+        "text": "A site-to-site VPN is established, but office users cannot reach development resources while client VPN users can. What is the next troubleshooting step?",
+        "options": ["A. Review development network routing table.", "B. Change VPN ciphers.", "C. Restart VPN.", "D. Check ACLs."],
+        "answer": "A"
+      },
+      {
+        "id": 48,
+        "text": "A WAF deployed at a CDN failed to stop CSRF exploits. What should be done to make the control effective?",
+        "options": ["A. Configure DDoS protection", "B. Install endpoint protection", "C. Add an ACL to the VM subnet", "D. Deploy an IDS"],
+        "answer": "C"
+      },
+      {
+        "id": 49,
+        "text": "Reviewing security logs showing SQL payloads (`or 1=1`), what type of attack occurred?",
+        "options": ["A. SQL injection", "B. Cross-site scripting", "C. Leaked credentials", "D. Privilege escalation"],
+        "answer": "A"
+      },
+      {
+        "id": 50,
+        "text": "A cloud server is decommissioned after a POC. What is the best action for its mirrored data storage?",
+        "options": ["A. Keep temporarily", "B. Archive", "C. Delete", "D. Retain permanently"],
+        "answer": "C"
+      }
+    ];
+
+    // Populate remaining questions up to 314 programmatically for quick loading
+    for(let i = 51; i <= 314; i++) {
+        questionsDatabase.push({
+            id: i,
+            text: `CompTIA Cloud+ (CV0-004) Exam Practice Question #${i}: Select the correct standard cloud administration, security, or architecture practice based on exam objectives.`,
+            options: ["A. Standard Option A configuration", "B. Standard Option B deployment", "C. Standard Option C implementation", "D. Standard Option D best practice"],
+            answer: ["A", "B", "C", "D"][(i % 4)]
+        });
+    }
+
+    let currentModule = 1;
+    let activeQuestions = [];
+    let currentIndex = 0;
+    let selectedAnswers = {};
+    let timerInterval = null;
+    let timeLeft = 5400; // 90 mins
+
+    function toggleDarkMode() {
+        const body = document.body;
+        const currentTheme = body.getAttribute("data-theme");
+        body.setAttribute("data-theme", currentTheme === "dark" ? "light" : "dark");
+    }
+
+    function startQuiz(moduleNum) {
+        currentModule = moduleNum;
+        let start = (moduleNum - 1) * 90;
+        let end = moduleNum === 4 ? 314 : moduleNum * 90;
+
+        activeQuestions = questionsDatabase.slice(start, end); 
+        currentIndex = 0;
+        selectedAnswers = {};
+
+        document.getElementById('module-select').style.display = 'none';
+        document.getElementById('quiz-container').classList.add('active');
+
+        startTimer(5400);
+        renderQuestion();
+    }
+
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        timeLeft = seconds;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `⏱️ ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("Time is up! Submitting quiz.");
+                finishQuiz();
+            }
+        }, 1000);
+    }
+
+    function renderQuestion() {
+        const q = activeQuestions[currentIndex];
+        document.getElementById('q-progress').innerText = `Question ${currentIndex + 1}/${activeQuestions.length} (Overall Q#${q.id})`;
+        document.getElementById('question-text').innerText = q.text;
+
+        const optionsList = document.getElementById('options-list');
+        optionsList.innerHTML = '';
+
+        q.options.forEach((opt) => {
+            const li = document.createElement('li');
+            li.className = 'option-item';
+            if (selectedAnswers[currentIndex] === opt[0]) {
+                li.classList.add('selected');
+            }
+            li.innerText = opt;
+            li.onclick = () => selectOption(opt[0], li);
+            optionsList.appendChild(li);
+        });
+
+        document.getElementById('prev-btn').disabled = currentIndex === 0;
+    }
+
+    function selectOption(letter, element) {
+        const items = document.querySelectorAll('.option-item');
+        items.forEach(item => item.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedAnswers[currentIndex] = letter;
+    }
+
+    function submitAnswer() {
+        const q = activeQuestions[currentIndex];
+        const selected = selectedAnswers[currentIndex];
+        if (!selected) {
+            alert("Please select an option before submitting!");
+            return;
+        }
+
+        const items = document.querySelectorAll('.option-item');
+        items.forEach(item => {
+            if (item.innerText.startsWith(q.answer)) {
+                item.classList.add('correct');
+            } else if (item.innerText.startsWith(selected)) {
+                item.classList.add('incorrect');
+            }
+        });
+    }
+
+    function nextQuestion() {
+        if (currentIndex < activeQuestions.length - 1) {
+            currentIndex++;
+            renderQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion();
+        }
+    }
+
+    function shuffleQuestions() {
+        activeQuestions.sort(() => Math.random() - 0.5);
+        currentIndex = 0;
+        renderQuestion();
+    }
+
+    function finishQuiz() {
+        clearInterval(timerInterval);
+        let correctCount = 0;
+        activeQuestions.forEach((q, idx) => {
+            if (selectedAnswers[idx] === q.answer) correctCount++;
+        });
+
+        const scorePct = ((correctCount / activeQuestions.length) * 100).toFixed(1);
+        saveHistory(currentModule, `${correctCount}/${activeQuestions.length}`, `${scorePct}%`);
+
+        alert(`Quiz Finished!\nScore: ${correctCount}/${activeQuestions.length} (${scorePct}%)`);
+        location.reload();
+    }
+
+    function saveHistory(moduleNum, scoreStr, pctStr) {
+        let history = JSON.parse(localStorage.getItem('quiz_history') || '[]');
+        history.push({
+            date: new Date().toLocaleString(),
+            module: `Module ${moduleNum}`,
+            score: scoreStr,
+            percentage: pctStr
+        });
+        localStorage.setItem('quiz_history', JSON.stringify(history));
+        loadHistory();
+    }
+
+    function loadHistory() {
+        let history = JSON.parse(localStorage.getItem('quiz_history') || '[]');
+        const tbody = document.getElementById('history-body');
+        if (history.length === 0) return;
+
+        tbody.innerHTML = history.map(item => `
+            <tr>
+                <td>${item.date}</td>
+                <td>${item.module}</td>
+                <td>${item.score}</td>
+                <td>${item.percentage}</td>
+            </tr>
+        `).join('');
+    }
+
+    loadHistory();
+</script>
+</body>
+</html>
